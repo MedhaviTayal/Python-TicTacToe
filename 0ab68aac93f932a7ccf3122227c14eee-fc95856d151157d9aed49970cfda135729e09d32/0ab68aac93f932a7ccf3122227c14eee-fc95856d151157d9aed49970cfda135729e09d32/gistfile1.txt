@@ -1,0 +1,73 @@
+import random
+
+def print_board(board):
+    for row in board:
+        print(" | ".join(row))
+        print("-" * 9)
+
+def check_winner(board, player):
+    # Check rows, columns, and diagonals for a win
+    for i in range(3):
+        if all(board[i][j] == player for j in range(3)) or all(board[j][i] == player for j in range(3)):
+            return True
+    if all(board[i][i] == player for i in range(3)) or all(board[i][2 - i] == player for i in range(3)):
+        return True
+    return False
+
+def is_board_full(board):
+    return all(board[i][j] != ' ' for i in range(3) for j in range(3))
+
+def get_user_move(board):
+    while True:
+        try:
+            move = int(input("Enter your move (1-9): "))
+            if 1 <= move <= 9 and board[(move - 1) // 3][(move - 1) % 3] == ' ':
+                return move
+            else:
+                print("Invalid move. Please choose an empty position (1-9).")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
+def get_computer_move(board):
+    empty_positions = [(i, j) for i in range(3) for j in range(3) if board[i][j] == ' ']
+    return random.choice(empty_positions)
+
+def play_tic_tac_toe():
+    board = [[' ' for _ in range(3)] for _ in range(3)]
+    user_symbol = input("Choose your symbol (X or O): ").upper()
+    computer_symbol = 'X' if user_symbol == 'O' else 'O'
+
+    print("You are playing as:", user_symbol)
+
+    while True:
+        print_board(board)
+
+        # User's move
+        user_move = get_user_move(board)
+        row, col = (user_move - 1) // 3, (user_move - 1) % 3
+        board[row][col] = user_symbol
+
+        # Check if the user wins
+        if check_winner(board, user_symbol):
+            print_board(board)
+            print("Congratulations! You win!")
+            break
+
+        # Check if the board is full (tie)
+        if is_board_full(board):
+            print_board(board)
+            print("It's a tie!")
+            break
+
+        # Computer's move
+        computer_row, computer_col = get_computer_move(board)
+        board[computer_row][computer_col] = computer_symbol
+
+        # Check if the computer wins
+        if check_winner(board, computer_symbol):
+            print_board(board)
+            print("Computer wins! Try again.")
+            break
+
+if __name__ == "__main__":
+    play_tic_tac_toe()
